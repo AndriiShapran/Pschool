@@ -1,0 +1,29 @@
+﻿@page "/AddParent"
+@using Pschool.Shared.DTOs;
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<h3>Create new parent</h3>
+<PageTitle>Add parent</PageTitle>
+<EditForm Model="@parent" OnValidSubmit="@AddNewParent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="parent.FirstName" placeholder="First Name" />
+    <InputText id="lastname" @bind-Value="parent.LastName" placeholder="Last Name" />
+    <InputText id="email" @bind-Value="parent.Email" placeholder="Email" />
+    <InputText id="username" @bind-Value="parent.Username" placeholder="Username" />
+    <InputText id="homeaddress" @bind-Value="parent.HomeAddress" placeholder="Home address" />
+    <InputText id="phone1" @bind-Value="parent.Phone1" placeholder="Phone1" />
+    <InputText id="workphone" @bind-Value="parent.WorkPhone" placeholder="Work phone" />
+    <InputText id="homephone" @bind-Value="parent.HomePhone" placeholder="Home phone" />
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    private ParentDto parent=new ParentDto();
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    private async void AddNewParent()
+    {
+        await Http.PostAsJsonAsync("/api/parent", parent);
+        Navigation.NavigateTo("/ParentsList");
+    }
+}

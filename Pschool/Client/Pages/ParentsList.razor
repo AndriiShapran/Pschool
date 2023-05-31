@@ -1,0 +1,71 @@
+﻿@page "/ParentsList"
+@using Pschool.Shared.DTOs
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<h3>ParentsList</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>HomeAddress</th>
+            <th>Phone 1</th>           
+            <th>Work phone</th>
+            <th>Home phone</th>
+            <th>Students</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var parent in parents)
+        {
+            <tr>
+                <td>@parent.FirstName</td>
+                <td>@parent.LastName</td>
+                <td>@parent.Username</td>
+                <td>@parent.Email</td>
+                <td>@parent.HomeAddress</td>
+                <td>@parent.Phone1</td>
+                <td>@parent.WorkPhone</td>
+                <td>@parent.HomePhone</td>
+                <td>@parent.StudentNumber</td>
+                <td>
+                    <button class="btn"><i class="fa fa-align-justify"></i></button>
+                    <button class="btn" @onclick="()=>EditParent(parent)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn" @onclick="()=>RemoveParent(parent)"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    [CascadingParameter]
+    public List<ParentDto> parents { get; set; }
+    [Inject] 
+    AppState AppState { get; set; }
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        parents = new List<ParentDto>();
+        var response = await Http.GetAsync("api/parent");
+        if (response.IsSuccessStatusCode)
+        {
+            parents = await response.Content.ReadFromJsonAsync<List<ParentDto>>();
+        }
+    }
+
+    public async void RemoveParent(ParentDto parent)
+    {
+        parents.Remove(parent);
+        var response = await Http.DeleteAsync($"api/parent/{parent.Id}");
+    }
+    public void EditParent(ParentDto parent)
+    {
+        AppState.Parent = parent;
+        Navigation.NavigateTo("/EditParent");
+    }
+}

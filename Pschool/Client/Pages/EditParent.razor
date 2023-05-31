@@ -1,0 +1,43 @@
+﻿@page "/EditParent"
+@using Pschool.Shared.DTOs;
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<h3>Edit parent</h3>
+<PageTitle>Edit parent</PageTitle>
+<EditForm Model="@oldParent" OnValidSubmit="@EditThisParent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="oldParent.FirstName" placeholder="First Name" />
+    <InputText id="lastname" @bind-Value="oldParent.LastName" placeholder="last Name" />
+    <InputText id="email" @bind-Value="oldParent.Email" placeholder="Email" />
+    <InputText id="username" @bind-Value="oldParent.Username" placeholder="Username" />
+    <InputText id="homeaddress" @bind-Value="oldParent.HomeAddress" placeholder="Home address" />
+    <InputText id="phone1" @bind-Value="oldParent.Phone1" placeholder="Phone1" />
+    <InputText id="workphone" @bind-Value="oldParent.WorkPhone" placeholder="Work phone" />
+    <InputText id="homephone" @bind-Value="oldParent.HomePhone" placeholder="Home phone" />
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    [Inject]
+    AppState AppState{get; set;}
+    private ParentDto oldParent=new ParentDto();
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    protected override void OnInitialized()
+    {
+        oldParent = (ParentDto)AppState.Parent.Clone();
+    }
+    private async void EditThisParent()
+    {
+        AppState.Parent.FirstName=oldParent.FirstName;
+        AppState.Parent.LastName = oldParent.LastName;
+        AppState.Parent.Username = oldParent.Username;
+        AppState.Parent.Email = oldParent.Email;
+        AppState.Parent.HomeAddress = oldParent.HomeAddress;
+        AppState.Parent.Phone1 = oldParent.Phone1;
+        AppState.Parent.WorkPhone = oldParent.WorkPhone;
+        AppState.Parent.HomePhone= oldParent.HomePhone;
+        await Http.PutAsJsonAsync("/api/parent", AppState.Parent);
+        Navigation.NavigateTo("/ParentsList");
+    }
+}

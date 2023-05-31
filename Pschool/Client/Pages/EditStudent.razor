@@ -1,0 +1,45 @@
+﻿@page "/EditStudent"
+@using Pschool.Shared.DTOs;
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<h3>Edit student</h3>
+<PageTitle>Edit student</PageTitle>
+<EditForm Model="@oldStudent" OnValidSubmit="@EditThisStudent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="oldStudent.FirstName" />
+    <InputText id="lastname" @bind-Value="oldStudent.LastName" />
+    <InputSelect @bind-Value="oldStudent.ParentId" Items="parents">
+        @foreach (var parent in parents)
+        {
+            <option value="@parent.Id">@parent.FirstName @parent.LastName</option>
+        }
+    </InputSelect>
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    [Inject]
+    AppState AppState{get; set;}
+    private StudentDto oldStudent=new StudentDto();
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    private List<ParentDto> parents;
+    protected async override Task OnInitializedAsync()
+    {
+        parents = new List<ParentDto>();
+        var response = await Http.GetAsync("api/parent");
+        if (response.IsSuccessStatusCode)
+        {
+            parents = await response.Content.ReadFromJsonAsync<List<ParentDto>>();
+        }
+        oldStudent = (StudentDto)AppState.Student.Clone();
+    }
+    private async void EditThisStudent()
+    {
+        AppState.Student.FirstName = oldStudent.FirstName;
+        AppState.Student.LastName = oldStudent.LastName;
+        AppState.Student.ParentId = oldStudent.ParentId;
+        await Http.PutAsJsonAsync("/api/student", AppState.Student);
+        Navigation.NavigateTo("/StudentsList");
+    }
+}

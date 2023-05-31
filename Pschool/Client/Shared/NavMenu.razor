@@ -1,0 +1,72 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">PschoolBlazor</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="ParentsList" @onclick="()=>expandParentSubMenu=!expandParentSubMenu">
+                <span class="oi oi-people" aria-hidden="true"></span> Parents
+            </NavLink>
+            @if (expandParentSubMenu)
+            {
+                <NavLink class="nav-link" href="ParentsList">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Parents list
+                </NavLink>
+                <NavLink class="nav-link" href="AddParent">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Add parent
+                </NavLink>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="StudentsList" @onclick="()=>expandStudentSubMenu=!expandStudentSubMenu">
+                <span class="oi oi-person" aria-hidden="true"></span> Students
+            </NavLink>
+            @if (expandStudentSubMenu)
+            {
+                <NavLink class="nav-link" href="StudentsList">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Students list
+                </NavLink>
+                <NavLink class="nav-link" href="AddStudent">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Add student
+                </NavLink>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link">
+                <span class="oi oi-plus" aria-hidden="true"></span> Events
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Activities
+            </NavLink>
+        </div>    
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool expandParentSubMenu;
+    private bool expandStudentSubMenu;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

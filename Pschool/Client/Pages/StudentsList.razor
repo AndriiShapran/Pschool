@@ -1,0 +1,83 @@
+﻿@page "/StudentsList"
+@using Pschool.Shared.DTOs
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<h3>StudentsList</h3>
+Filter by parent:
+<InputSelect @bind-Value="parentId" Items="parents">
+    @foreach (var parent in parents)
+    {
+        <option value="@parent.Id">@parent.FirstName @parent.LastName</option>
+    }
+</InputSelect>
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Parent</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in students)
+        {
+            @if (parentId==-1 || student.ParentId == parentId)
+            {
+                <tr>
+                    <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.parentName</td>
+                <td>
+                    <button class="btn"><i class="fa fa-align-justify"></i></button>
+                    <button class="btn" @onclick="()=>Edit(student)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn" @onclick="()=>Remove(student)"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+@code {
+    [CascadingParameter]
+    public List<StudentDto> students { get; set; }
+    [Inject] 
+    AppState AppState { get; set; }
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    private int parentId;
+    private List<ParentDto> parents=new List<ParentDto>();
+    private List<ParentDto> trueParents = new List<ParentDto>();
+    protected override async Task OnInitializedAsync()
+    {
+        students = new List<StudentDto>();
+        var response = await Http.GetAsync("api/student");
+        if (response.IsSuccessStatusCode)
+        {
+            students = await response.Content.ReadFromJsonAsync<List<StudentDto>>();
+        }
+
+        parentId = -1;
+        parents.Add(new ParentDto(){Id=-1, FirstName="All"});
+
+        trueParents = new List<ParentDto>();
+        var response2 = await Http.GetAsync("api/parent");
+        if (response2.IsSuccessStatusCode)
+        {
+            trueParents = await response2.Content.ReadFromJsonAsync<List<ParentDto>>();
+        }
+        parents.AddRange(trueParents);
+    }
+
+    public async void Remove(StudentDto student)
+    {
+        students.Remove(student);
+        var response = await Http.DeleteAsync($"api/student/{student.Id}");
+    }
+    public void Edit(StudentDto student)
+    {
+        AppState.Student = student;
+        Navigation.NavigateTo("/EditStudent");
+    }
+}

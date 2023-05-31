@@ -1,0 +1,43 @@
+﻿@page "/AddStudent"
+@using Pschool.Shared.DTOs;
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<h3>Create new student</h3>
+<PageTitle>Add student</PageTitle>
+<EditForm Model="@student" OnValidSubmit="@AddNewStudent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="student.FirstName" placeholder="First Name"/>
+    <InputText id="lastname" @bind-Value="student.LastName" placeholder="Second Name" />
+    Parent:
+    <InputSelect @bind-Value="parentId" Items="parents">
+        @foreach(var parent in parents)
+        {
+            <option value="@parent.Id">@parent.FirstName @parent.LastName</option>
+        }
+    </InputSelect>
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    private StudentDto student=new StudentDto();
+    private List<ParentDto> parents;
+    private int parentId = 0;
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        parents = new List<ParentDto>();
+        var response = await Http.GetAsync("api/parent");
+        if (response.IsSuccessStatusCode)
+        {
+            parents = await response.Content.ReadFromJsonAsync<List<ParentDto>>();
+            parentId = parents[0].Id;
+        }
+    }
+    private async void AddNewStudent()
+    {
+        student.ParentId = parentId;
+        await Http.PostAsJsonAsync("/api/student", student);
+        Navigation.NavigateTo("/StudentsList");
+    }
+}
