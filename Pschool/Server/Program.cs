@@ -11,6 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IParentService, ParentService>();
+builder.Services.AddScoped<INotiService, NotiService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

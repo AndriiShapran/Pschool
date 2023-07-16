@@ -8,6 +8,7 @@
         public ApplicationContext(DbContextOptions options) : base(options) { }
         public DbSet<Student> Students { get; set; }
         public DbSet<Parent> Parents { get; set; }
+        public DbSet<Noti> Notis { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {           
             base.OnConfiguring(optionsBuilder);
