@@ -1,0 +1,46 @@
+﻿@page "/NotiList"
+@using Pschool.Shared.DTOs
+@inject NavigationManager NavManager
+@inject HttpClient Http
+<h3>NotiList</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Header</th>
+            <th>Text</th>
+            <th>Object</th>
+            <th>Object info</th>
+            <th>Is AAAAA?</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var noti in notis)
+        {
+            <tr>
+                <td>@noti.Header</td>
+                <td>@noti.Body</td>
+                <td>@noti.ParentId</td>
+                <td>@noti.StudentId</td>
+                <td>@noti.IsAaaaaa</td>
+                <td>@noti.RelatedObject</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    [CascadingParameter]
+    public List<NotiDto> notis { get; set; }
+    [Inject]
+    AppState AppState { get; set; }
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        notis = new List<NotiDto>();
+        var response = await Http.GetAsync("api/Noti");
+        if (response.IsSuccessStatusCode)
+        {
+           notis = await response.Content.ReadFromJsonAsync<List<NotiDto>>();
+        }
+    }
+}

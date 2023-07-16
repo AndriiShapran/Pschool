@@ -17,6 +17,18 @@ namespace Pschool.Services
             var parent = context.Parents.FirstOrDefault(x => x.Id == id);
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             context.Parents.Remove(parent);
+
+            var noti = new Noti
+            {
+                Header="Deleting",
+                Body="This parent was deleted",
+                ParentId=id,
+                Parent=parent,
+                IsAaaaaa=true,
+            };
+            context.Notis.Add(noti);
+
+
             await context.SaveChangesAsync();
             return parent.toParentDto();
         }
@@ -48,6 +60,18 @@ namespace Pschool.Services
                 HomeAddress = parent.HomeAddress,
             };
             context.Parents.Add(newParent);
+
+
+            var noti = new Noti
+            {
+                Header = "Add",
+                Body = "New parent was added",
+                ParentId = newParent.Id,
+                Parent = newParent,
+                IsAaaaaa = true,
+            };
+            context.Notis.Add(noti);
+
             await context.SaveChangesAsync();
             return parent;
         }
@@ -69,6 +93,18 @@ namespace Pschool.Services
                 HomeAddress = parent.HomeAddress,
             };
             context.Update(newParent);
+
+            var noti = new Noti
+            {
+                Header = "Edit",
+                Body = "This parent was edited",
+                ParentId = newParent.Id,
+                Parent = newParent,
+                IsAaaaaa = true,
+            };
+            context.Notis.Add(noti);
+
+
             await context.SaveChangesAsync();
             return parent;
         }
